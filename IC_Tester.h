@@ -12,14 +12,19 @@
 #define AND 1
 #definr OR 2
 #define NOR 3
+#define ARD_GND -1
+#define ARD_VCC 13
 
 class IC_Tester {
 private:
 protected:
+    int[14] notList, andList, orList, norList, pinList;
+    int[4][3] andGates, orGates, norGates;
+    int[6][2] notGates;
 
-    int[14] notList, andList, orList, norList;
+    void scan(const int gate);
 
-    void Scan(const int gate);
+    void setPins(const int gateList[14]);
 }
 
 #endif //IC_TESTER_IC_TESTER_H
