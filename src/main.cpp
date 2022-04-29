@@ -1,5 +1,5 @@
 #include <Arduino.h>
-#include "IC_Tester.h"
+#include "../include/IC_Tester.h"
 
 IC_Tester icTest;
 int incomingByte = 0;
@@ -12,18 +12,20 @@ void setup() {
 void loop() {
     bad_input = true;
     gate = -1;
-    while (bad_input){
-        Serial.println("Enter Gate type as number: \nLS02 - 0\nLS04 - 1\nLS08 - 2\nLS32 - 3");
+    Serial.println("Enter Gate type as number: \nLS02 - 0\nLS04 - 1\nLS08 - 2\nLS32 - 3");
+    while (bad_input) {
         if (Serial.available() > 0) {
             // read the incoming byte:
             incomingByte = Serial.read();
+            Serial.print("Received: ");
+            Serial.println(incomingByte);
             switch (incomingByte) {
                 case 0:
                     gate = NOR;
                     break;
                 case 1:
                     gate = NOT;
-                    bad_input = false
+                    bad_input = false;
                     break;
                 case 2:
                     gate = AND;
@@ -35,9 +37,10 @@ void loop() {
                     break;
                 default:
                     Serial.println("Invalid IC type. Try Again.");
-            }
-            if(!bad_input){
-                icTest.scan(gate);
+                    Serial.println("Enter Gate type as number: \nLS02 - 0\nLS04 - 1\nLS08 - 2\nLS32 - 3");
+                    if (!bad_input) {
+                        icTest.scan(gate);
+                    }
             }
         }
     }
