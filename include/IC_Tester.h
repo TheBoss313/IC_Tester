@@ -6,8 +6,8 @@
 #define IC_TESTER_IC_TESTER_H
 #define TO_IC 90
 #define FROM_IC 91
-#define VCC 100
-#define GND 101
+#define VCC 80
+#define GND 81
 #define NOT 4
 #define AND 8
 #define OR 32

@@ -13,25 +13,25 @@ IC_Tester::IC_Tester() : notList{TO_IC, FROM_IC, TO_IC, FROM_IC, TO_IC, FROM_IC,
                                 TO_IC, TO_IC, VCC},
                          norList{FROM_IC, TO_IC, TO_IC, FROM_IC, TO_IC, TO_IC, GND, TO_IC, TO_IC, FROM_IC, TO_IC, TO_IC,
                                  FROM_IC, VCC},
-                         pinList{2, 3, 4,5, 6, 7, ARD_GND, 8, 9, 10, 11, 12, 13, ARD_VCC},
+                         pinList{2, 3, 4, 5, 6, 7, ARD_GND, 8, 9, 10, 11, 12, 13, ARD_VCC},
                          andGates{{0,  1,  2},
                                   {3,  4,  5},
-                                  {9, 8, 7},
+                                  {9,  8,  7},
                                   {12, 11, 10}},
                          orGates{{0,  1,  2},
                                  {3,  4,  5},
-                                 {7,  8,  9},
-                                 {10, 11, 12}},
-                         norGates{{0,  1,  2},
-                                  {3,  4,  5},
+                                 {9,  8,  7},
+                                 {12, 11, 10}},
+                         norGates{{2,  1,  0},
+                                  {5,  4,  3},
                                   {7,  8,  9},
                                   {10, 11, 12}},
                          notGates{{0,  1},
                                   {2,  3},
                                   {4,  5},
-                                  {7,  8},
-                                  {9,  10},
-                                  {11, 12}} {
+                                  {8,  7},
+                                  {10, 9},
+                                  {12, 11}} {
 }
 
 void IC_Tester::setPins(const int gateList[14]) {
@@ -41,14 +41,13 @@ void IC_Tester::setPins(const int gateList[14]) {
         } else if (gateList[i] == FROM_IC) {
             pinMode(pinList[i], INPUT);
         } //else if (gateList[i] == VCC) {
-            //pinMode(pinList[i], OUTPUT);
+        //pinMode(pinList[i], OUTPUT);
         //}
     }
 }
 
 void IC_Tester::scan(const int gate) {
     bool test_res;
-    int list[14];
     // Power to VCC
     // digitalWrite(ARD_VCC, HIGH);
     if (gate == OR) {
@@ -59,9 +58,6 @@ void IC_Tester::scan(const int gate) {
                            {HIGH, LOW,  HIGH},
                            {HIGH, HIGH, HIGH}};
         setPins(orList);
-        for (int i = 0; i < 14; i++) {
-            list[i] = orList[i];
-        }
         int test_outputs[4][4];
         for (int gateI = 0; gateI < 4; gateI++) {
             int locGate[3];
@@ -70,10 +66,10 @@ void IC_Tester::scan(const int gate) {
             }
 
             for (int test = 0; test < 4; test++) {
-                digitalWrite(list[locGate[0]], cases[test][0]);
-                digitalWrite(list[locGate[1]], cases[test][1]);
-                test_res = digitalRead(list[locGate[2]]) == cases[test][2];
-                Serial.print(digitalRead(list[locGate[2]]));
+                digitalWrite(pinList[locGate[0]], cases[test][0]);
+                digitalWrite(pinList[locGate[1]], cases[test][1]);
+                test_res = digitalRead(pinList[locGate[2]]) == cases[test][2];
+                Serial.print(digitalRead(pinList[locGate[2]]));
                 Serial.print(" ");
                 Serial.print(cases[test][2]);
                 Serial.print(" ");
@@ -81,7 +77,8 @@ void IC_Tester::scan(const int gate) {
                 test_outputs[gateI][test] = test_res;
             }
         }
-        for (int i=0; i < 4; i++) {
+        // Printer Loop
+        for (int i = 0; i < 4; i++) {
             Serial.print("Gate #");
             Serial.println(i + 1);
             int counter = 1;
@@ -104,9 +101,6 @@ void IC_Tester::scan(const int gate) {
                            {HIGH, LOW,  LOW},
                            {HIGH, HIGH, HIGH}};
         setPins(andList);
-        for (int i = 0; i < 14; i++) {
-            list[i] = andList[i];
-        }
         int test_outputs[4][4];
         for (int gateI = 0; gateI < 4; gateI++) {
             int locGate[3];
@@ -115,18 +109,19 @@ void IC_Tester::scan(const int gate) {
             }
 
             for (int test = 0; test < 4; test++) {
-                    digitalWrite(list[locGate[0]], cases[test][0]);
-                    digitalWrite(list[locGate[1]], cases[test][1]);
-                    test_res = digitalRead(list[locGate[2]]) == cases[test][2];
-                Serial.print(digitalRead(list[locGate[2]]));
+                digitalWrite(pinList[locGate[0]], cases[test][0]);
+                digitalWrite(pinList[locGate[1]], cases[test][1]);
+                test_res = digitalRead(pinList[locGate[2]]) == cases[test][2];
+                Serial.print(digitalRead(pinList[locGate[2]]));
                 Serial.print(" ");
                 Serial.print(cases[test][2]);
                 Serial.print(" ");
                 Serial.println(test_res);
-                    test_outputs[gateI][test] = test_res;
+                test_outputs[gateI][test] = test_res;
             }
         }
-        for (int i=0; i < 4; i++) {
+        // Printer Loop
+        for (int i = 0; i < 4; i++) {
             Serial.print("Gate #");
             Serial.println(i + 1);
             int counter = 1;
@@ -149,9 +144,6 @@ void IC_Tester::scan(const int gate) {
                            {HIGH, LOW,  LOW},
                            {HIGH, HIGH, LOW}};
         setPins(norList);
-        for (int i = 0; i < 14; i++) {
-            list[i] = norList[i];
-        }
         int test_outputs[4][4];
         for (int gateI = 0; gateI < 4; gateI++) {
             int locGate[3];
@@ -160,15 +152,30 @@ void IC_Tester::scan(const int gate) {
             }
 
             for (int test = 0; test < 4; test++) {
-                digitalWrite(list[locGate[0]], cases[test][0]);
-                digitalWrite(list[locGate[1]], cases[test][1]);
-                test_res = digitalRead(list[locGate[2]]) == cases[test][2];
-                Serial.print(digitalRead(list[locGate[2]]));
+                digitalWrite(pinList[locGate[0]], cases[test][0]);
+                digitalWrite(pinList[locGate[1]], cases[test][1]);
+                test_res = digitalRead(pinList[locGate[2]]) == cases[test][2];
+                Serial.print(digitalRead(pinList[locGate[2]]));
                 Serial.print(" ");
                 Serial.print(cases[test][2]);
                 Serial.print(" ");
                 Serial.println(test_res);
                 test_outputs[gateI][test] = test_res;
+            }
+        }
+        // Printer Loop
+        for (int i = 0; i < 4; i++) {
+            Serial.print("Gate #");
+            Serial.println(i + 1);
+            int counter = 1;
+            for (int j = 0; j < 4; j++) {
+                String out = "";
+                if (test_outputs[i][j]) { out = "PASS"; } else { out = "FAIL"; }
+                Serial.print("Condition ");
+                Serial.print(counter);
+                Serial.print(" ");
+                Serial.println(out);
+                counter++;
             }
         }
     }
@@ -178,9 +185,6 @@ void IC_Tester::scan(const int gate) {
         int cases[2][2] = {{HIGH, LOW},
                            {LOW,  HIGH}};
         setPins(notList);
-        for (int i = 0; i < 14; i++) {
-            list[i] = notList[i];
-        }
         int test_outputs[6][2];
         for (int gateI = 0; gateI < 6; gateI++) {
             int locGate[2];
@@ -189,14 +193,29 @@ void IC_Tester::scan(const int gate) {
             }
 
             for (int test = 0; test < 2; test++) {
-                digitalWrite(list[locGate[0]], cases[test][0]);
-                test_res = digitalRead(list[locGate[1]]) == cases[test][1];
-                Serial.print(digitalRead(list[locGate[1]]));
+                digitalWrite(pinList[locGate[0]], cases[test][0]);
+                test_res = digitalRead(pinList[locGate[1]]) == cases[test][1];
+                Serial.print(digitalRead(pinList[locGate[1]]));
                 Serial.print(" ");
                 Serial.print(cases[test][1]);
                 Serial.print(" ");
                 Serial.println(test_res);
                 test_outputs[gateI][test] = test_res;
+            }
+        }
+        // Printer Loop
+        for (int i = 0; i < 6; i++) {
+            Serial.print("Gate #");
+            Serial.println(i + 1);
+            int counter = 1;
+            for (int j = 0; j < 2; j++) {
+                String out = "";
+                if (test_outputs[i][j]) { out = "PASS"; } else { out = "FAIL"; }
+                Serial.print("Condition ");
+                Serial.print(counter);
+                Serial.print(" ");
+                Serial.println(out);
+                counter++;
             }
         }
     }
